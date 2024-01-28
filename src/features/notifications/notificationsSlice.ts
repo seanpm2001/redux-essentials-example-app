@@ -5,35 +5,61 @@ import { client } from '@/api/client'
 import type { RootState } from '@/app/store'
 import { createAppAsyncThunk } from '@/app/withTypes'
 
-export interface Notification {
+export interface ServerNotification {
   id: string
   date: string
   message: string
   user: string
 }
 
+export interface ClientNotification extends ServerNotification {
+  read: boolean
+  isNew: boolean
+}
+
 export const fetchNotifications = createAppAsyncThunk('notifications/fetchNotifications', async (_unused, thunkApi) => {
   const allNotifications = selectAllNotifications(thunkApi.getState())
   const [latestNotification] = allNotifications
   const latestTimestamp = latestNotification ? latestNotification.date : ''
-  const response = await client.get<Notification[]>(`/fakeApi/notifications?since=${latestTimestamp}`)
+  const response = await client.get<ServerNotification[]>(`/fakeApi/notifications?since=${latestTimestamp}`)
+
   return response.data
 })
 
-const initialState: Notification[] = []
+const initialState: ClientNotification[] = []
 
 const notificationsSlice = createSlice({
   name: 'notifications',
   initialState,
-  reducers: {},
+  reducers: {
+    allNotificationsRead(state) {
+      state.forEach((notification) => {
+        notification.read = true
+      })
+    },
+  },
   extraReducers(builder) {
     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-      state.push(...action.payload)
+      // Add client-side metadata for tracking new notifications
+      const notificationsWithMetadata: ClientNotification[] = action.payload.map((notification) => ({
+        ...notification,
+        read: false,
+        isNew: true,
+      }))
+
+      state.forEach((notification) => {
+        // Any notifications we've read are no longer new
+        notification.isNew = !notification.read
+      })
+
+      state.push(...notificationsWithMetadata)
       // Sort with newest first
       state.sort((a, b) => b.date.localeCompare(a.date))
     })
   },
 })
+
+export const { allNotificationsRead } = notificationsSlice.actions
 
 export default notificationsSlice.reducer
 
