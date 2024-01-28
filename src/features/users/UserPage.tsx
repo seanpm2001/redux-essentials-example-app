@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 
 import { useAppSelector } from '@/app/hooks'
-import { selectAllPosts } from '@/features/posts/postsSlice'
+import { selectPostsByUser } from '@/features/posts/postsSlice'
 
 import { selectUserById } from './usersSlice'
 
@@ -10,10 +10,7 @@ export const UserPage = () => {
 
   const user = useAppSelector((state) => selectUserById(state, userId!))
 
-  const postsForUser = useAppSelector((state) => {
-    const allPosts = selectAllPosts(state)
-    return allPosts.filter((post) => post.user === userId)
-  })
+  const postsForUser = useAppSelector((state) => selectPostsByUser(state, userId!))
 
   if (!user) {
     return (
