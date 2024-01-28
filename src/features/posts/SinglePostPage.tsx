@@ -5,11 +5,12 @@ import { TimeAgo } from '@/components/TimeAgo'
 
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
+import { selectPostById } from './postsSlice'
 
 export const SinglePostPage = () => {
   const { postId } = useParams()
 
-  const post = useAppSelector((state) => state.posts.find((post) => post.id === postId))
+  const post = useAppSelector((state) => selectPostById(state, postId!))
   const user = useAppSelector((state) => state.auth.username)
 
   if (!post) {
