@@ -6,7 +6,25 @@ import { TimeAgo } from '@/components/TimeAgo'
 
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
-import { selectAllPosts, fetchPosts } from './postsSlice'
+import { Post, selectAllPosts, fetchPosts } from './postsSlice'
+
+const PostExcerpt = ({ post }: { post: Post }) => {
+  return (
+    <article className="post-excerpt" key={post.id}>
+      <h3>{post.title}</h3>
+      <div>
+        <PostAuthor userId={post.user} />
+        <TimeAgo timestamp={post.date} />
+      </div>
+      <p className="post-content">{post.content.substring(0, 100)}</p>
+
+      <ReactionButtons post={post} />
+      <Link to={`/posts/${post.id}`} className="button muted-button">
+        View Post
+      </Link>
+    </article>
+  )
+}
 
 export const PostsList = () => {
   const dispatch = useAppDispatch()
@@ -22,22 +40,7 @@ export const PostsList = () => {
   // Sort posts in reverse chronological order by datetime string
   const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
 
-  const renderedPosts = orderedPosts.map((post) => {
-    return (
-      <article className="post-excerpt" key={post.id}>
-        <h3>{post.title}</h3>
-        <div>
-          <PostAuthor userId={post.user} />
-          <TimeAgo timestamp={post.date} />
-        </div>
-        <p className="post-content">{post.content.substring(0, 100)}</p>
-        <ReactionButtons post={post} />
-        <Link to={`/posts/${post.id}`} className="button muted-button">
-          View Post
-        </Link>
-      </article>
-    )
-  })
+  const renderedPosts = orderedPosts.map((post) => <PostExcerpt key={post.id} post={post} />)
 
   return (
     <section className="posts-list">
