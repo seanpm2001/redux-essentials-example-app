@@ -6,7 +6,7 @@ import type { RootState } from '@/app/store'
 
 import { selectCurrentUsername } from '@/features/auth/authSlice'
 
-interface User {
+export interface User {
   id: string
   name: string
 }
