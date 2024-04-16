@@ -40,10 +40,21 @@ const initialReactions: Reactions = {
   eyes: 0,
 }
 
-export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
-  const response = await client.get<Post[]>('/fakeApi/posts')
-  return response.data
-})
+export const fetchPosts = createAsyncThunk<Post[], void, { state: RootState }>(
+  'posts/fetchPosts',
+  async () => {
+    const response = await client.get<Post[]>('/fakeApi/posts')
+    return response.data
+  },
+  {
+    condition(arg, thunkApi) {
+      const { posts } = thunkApi.getState()
+      if (posts.status !== 'idle') {
+        return false
+      }
+    },
+  },
+)
 
 const initialState: PostsState = {
   posts: [],
