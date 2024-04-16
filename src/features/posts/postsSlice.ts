@@ -1,7 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { client } from '@/api/client'
 
 import type { RootState } from '@/app/store'
+import { createAppAsyncThunk } from '@/app/withTypes'
 
 import { logout } from '@/features/auth/authSlice'
 
@@ -33,7 +34,7 @@ interface PostsState {
   error: string | null
 }
 
-export const fetchPosts = createAsyncThunk<Post[], void, { state: RootState }>(
+export const fetchPosts = createAppAsyncThunk(
   'posts/fetchPosts',
   async () => {
     const response = await client.get<Post[]>('/fakeApi/posts')
@@ -49,7 +50,7 @@ export const fetchPosts = createAsyncThunk<Post[], void, { state: RootState }>(
   },
 )
 
-export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPost: NewPost) => {
+export const addNewPost = createAppAsyncThunk('posts/addNewPost', async (initialPost: NewPost) => {
   const response = await client.post<Post>('/fakeApi/posts', initialPost)
   return response.data
 })
