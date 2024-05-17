@@ -4,6 +4,7 @@ import { useAppSelector } from '@/app/hooks'
 import { TimeAgo } from '@/components/TimeAgo'
 
 import { PostAuthor } from './PostAuthor'
+import { ReactionButtons } from './ReactionButtons'
 
 export const PostsList = () => {
   const posts = useAppSelector((state) => state.posts)
@@ -22,6 +23,7 @@ export const PostsList = () => {
           <TimeAgo timestamp={post.date} />
         </div>
         <p className="post-content">{post.content.substring(0, 100)}</p>
+        <ReactionButtons post={post} />
         <Link to={`/posts/${post.id}`} className="button muted-button">
           View Post
         </Link>
