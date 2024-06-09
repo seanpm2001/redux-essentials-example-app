@@ -7,11 +7,12 @@ import { LoginPage } from './features/auth/LoginPage'
 import { PostsMainPage } from './features/posts/PostsMainPage'
 import { SinglePostPage } from './features/posts/SinglePostPage'
 import { EditPostForm } from './features/posts/EditPostForm'
+import { selectCurrentUsername } from './features/auth/authSlice'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const user = useAppSelector((state) => state.auth.username)
+  const username = useAppSelector(selectCurrentUsername)
 
-  if (!user) {
+  if (!username) {
     return <Navigate to="/" replace />
   }
 

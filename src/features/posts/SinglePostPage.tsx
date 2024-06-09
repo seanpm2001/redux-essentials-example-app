@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { useAppSelector } from '@/app/hooks'
 import { TimeAgo } from '@/components/TimeAgo'
 
+import { selectCurrentUsername } from '@/features/auth/authSlice'
+
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
 import { selectPostById } from './postsSlice'
@@ -11,7 +13,7 @@ export const SinglePostPage = () => {
   const { postId } = useParams()
 
   const post = useAppSelector((state) => selectPostById(state, postId!))
-  const user = useAppSelector((state) => state.auth.username)
+  const username = useAppSelector(selectCurrentUsername)
 
   if (!post) {
     return (
@@ -21,7 +23,7 @@ export const SinglePostPage = () => {
     )
   }
 
-  const canEdit = user === post.user
+  const canEdit = username === post.user
 
   return (
     <section>

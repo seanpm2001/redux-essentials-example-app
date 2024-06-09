@@ -2,6 +2,8 @@ import React from 'react'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 
+import { selectCurrentUsername } from '@/features/auth/authSlice'
+
 import { postAdded } from './postsSlice'
 
 // TS types for the input fields
@@ -16,7 +18,7 @@ interface AddPostFormElements extends HTMLFormElement {
 
 export const AddPostForm = () => {
   const dispatch = useAppDispatch()
-  const userId = useAppSelector((state) => state.auth.username)!
+  const userId = useAppSelector(selectCurrentUsername)!
 
   const handleSubmit = (e: React.FormEvent<AddPostFormElements>) => {
     // Prevent server submission

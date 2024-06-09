@@ -1,13 +1,16 @@
 import { Link } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+
+import { selectCurrentUsername, userLoggedOut } from '@/features/auth/authSlice'
+import { selectCurrentUser } from '@/features/users/usersSlice'
+
 import { UserIcon } from './UserIcon'
-import { userLoggedOut } from '@/features/auth/authSlice'
 
 export const Navbar = () => {
   const dispatch = useAppDispatch()
-  const username = useAppSelector((state) => state.auth.username)
-  const user = useAppSelector((state) => state.users.find((user) => user.id === username))
+  const username = useAppSelector(selectCurrentUsername)
+  const user = useAppSelector(selectCurrentUser)
 
   const isLoggedIn = !!username && !!user
 

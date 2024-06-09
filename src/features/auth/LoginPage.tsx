@@ -2,6 +2,9 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
+
+import { selectAllUsers } from '@/features/users/usersSlice'
+
 import { userLoggedIn } from './authSlice'
 
 interface LoginPageFormFields extends HTMLFormControlsCollection {
@@ -13,7 +16,7 @@ interface LoginPageFormElements extends HTMLFormElement {
 
 export const LoginPage = () => {
   const dispatch = useAppDispatch()
-  const users = useAppSelector((state) => state.users)
+  const users = useAppSelector(selectAllUsers)
   const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent<LoginPageFormElements>) => {

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import type { RootState } from '@/app/store'
+
 interface AuthState {
   username: string | null
 }
@@ -26,3 +28,5 @@ const authSlice = createSlice({
 export const { userLoggedIn, userLoggedOut } = authSlice.actions
 
 export default authSlice.reducer
+
+export const selectCurrentUsername = (state: RootState) => state.auth.username
