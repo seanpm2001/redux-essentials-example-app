@@ -10,6 +10,7 @@ export const SinglePostPage = () => {
   const { postId } = useParams()
 
   const post = useAppSelector((state) => state.posts.find((post) => post.id === postId))
+  const user = useAppSelector((state) => state.auth.username)
 
   if (!post) {
     return (
@@ -18,6 +19,8 @@ export const SinglePostPage = () => {
       </section>
     )
   }
+
+  const canEdit = user === post.user
 
   return (
     <section>
@@ -29,9 +32,11 @@ export const SinglePostPage = () => {
         </div>
         <p className="post-content">{post.content}</p>
         <ReactionButtons post={post} />
-        <Link to={`/editPost/${post.id}`} className="button">
-          Edit Post
-        </Link>
+        {canEdit && (
+          <Link to={`/editPost/${post.id}`} className="button">
+            Edit Post
+          </Link>
+        )}
       </article>
     </section>
   )
