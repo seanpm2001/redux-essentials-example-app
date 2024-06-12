@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
+
+import { Spinner } from '@/components/Spinner'
 import { TimeAgo } from '@/components/TimeAgo'
 
 import { PostAuthor } from './PostAuthor'
@@ -30,6 +32,7 @@ export const PostsList = () => {
   const dispatch = useAppDispatch()
   const posts = useAppSelector(selectAllPosts)
   const postStatus = useAppSelector((state) => state.posts.status)
+  const error = useAppSelector((state) => state.posts.error)
 
   useEffect(() => {
     if (postStatus === 'idle') {
@@ -37,15 +40,23 @@ export const PostsList = () => {
     }
   }, [postStatus, dispatch])
 
-  // Sort posts in reverse chronological order by datetime string
-  const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
+  let content: React.ReactNode
 
-  const renderedPosts = orderedPosts.map((post) => <PostExcerpt key={post.id} post={post} />)
+  if (postStatus === 'pending') {
+    content = <Spinner text="Loading..." />
+  } else if (postStatus === 'succeeded') {
+    // Sort posts in reverse chronological order by datetime string
+    const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
+
+    content = orderedPosts.map((post) => <PostExcerpt key={post.id} post={post} />)
+  } else if (postStatus === 'failed') {
+    content = <div>{error}</div>
+  }
 
   return (
     <section className="posts-list">
       <h2>Posts</h2>
-      {renderedPosts}
+      {content}
     </section>
   )
 }
