@@ -228,10 +228,13 @@ export const handlers = [
     await delay(ARTIFICIAL_DELAY_MS)
     return HttpResponse.json(serializePost(updatedPost))
   }),
-  http.get('/fakeApi/notifications', async () => {
+  http.get('/fakeApi/notifications', async ({ request, params }) => {
+    console.log('Req: ', request, 'params: ', params)
+    const parsedUrl = new URL(request.url)
+    const since = parsedUrl.searchParams.get('since') ?? undefined
     const numNotifications = getRandomInt(1, 5)
 
-    let notifications = generateRandomNotifications(undefined, numNotifications, db)
+    let notifications = generateRandomNotifications(since, currentUser, numNotifications, db)
 
     await delay(ARTIFICIAL_DELAY_MS)
     return HttpResponse.json(notifications)
@@ -260,7 +263,7 @@ const sendMessage = (socket: Client, obj: any) => {
 const sendRandomNotifications = (socket: Client, since: string) => {
   const numNotifications = getRandomInt(1, 5)
 
-  const notifications = generateRandomNotifications(since, numNotifications, db)
+  const notifications = generateRandomNotifications(since, currentUser, numNotifications, db)
 
   sendMessage(socket, { type: 'notifications', payload: notifications })
 }
@@ -291,7 +294,12 @@ socketServer.on('connection', (socket) => {
 
 const notificationTemplates = ['poked you', 'says hi!', `is glad we're friends`, 'sent you a gift']
 
-function generateRandomNotifications(since: string | undefined, numNotifications: number, db: ModelDB) {
+function generateRandomNotifications(
+  since: string | undefined,
+  currentUser: string | null,
+  numNotifications: number,
+  db: ModelDB,
+) {
   const now = new Date()
   let pastDate: Date
 
@@ -305,7 +313,10 @@ function generateRandomNotifications(since: string | undefined, numNotifications
   // Create N random notifications. We won't bother saving these
   // in the DB - just generate a new batch and return them.
   const notifications = [...Array(numNotifications)].map(() => {
-    const user = randomFromArray(db.user.getAll())
+    const allUsers = db.user.getAll()
+    const otherUsers = allUsers.filter((user) => user.id !== currentUser)
+    console.log('Current user: ', currentUser, allUsers)
+    const user = randomFromArray(otherUsers)
     const template = randomFromArray(notificationTemplates)
     return {
       id: nanoid(),
