@@ -3,7 +3,7 @@ import { client } from '@/api/client'
 
 import type { RootState } from '@/app/store'
 
-import { userLoggedOut } from '@/features/auth/authSlice'
+import { logout } from '@/features/auth/authSlice'
 
 export interface Reactions {
   thumbsUp: number
@@ -82,7 +82,7 @@ const postsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(userLoggedOut, (state) => {
+      .addCase(logout.fulfilled, (state) => {
         // Clear out the list of posts whenever the user logs out
         return initialState
       })
