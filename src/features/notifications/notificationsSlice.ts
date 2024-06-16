@@ -1,8 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 import { client } from '@/api/client'
 
 import type { RootState } from '@/app/store'
+import { createAppAsyncThunk } from '@/app/withTypes'
 
 export interface Notification {
   id: string
@@ -11,13 +12,7 @@ export interface Notification {
   user: string
 }
 
-export const fetchNotifications = createAsyncThunk<
-  Notification[],
-  void,
-  {
-    state: RootState
-  }
->('notifications/fetchNotifications', async (_unused, thunkApi) => {
+export const fetchNotifications = createAppAsyncThunk('notifications/fetchNotifications', async (_unused, thunkApi) => {
   const allNotifications = selectAllNotifications(thunkApi.getState())
   const [latestNotification] = allNotifications
   const latestTimestamp = latestNotification ? latestNotification.date : ''
