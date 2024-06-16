@@ -140,7 +140,18 @@ const serializePost = (post: Post) => ({
 
 /* MSW REST API Handlers */
 
+let currentUser: string | null = null
+
 export const handlers = [
+  http.post('/fakeApi/login', async function ({ request }) {
+    const data = (await request.json()) as { username: string }
+    currentUser = data.username
+    return HttpResponse.json({ success: true })
+  }),
+  http.post('/fakeApi/logout', async function () {
+    currentUser = null
+    return HttpResponse.json({ success: true })
+  }),
   http.get('/fakeApi/posts', async function () {
     const posts = db.post.getAll().map(serializePost)
     await delay(ARTIFICIAL_DELAY_MS)
